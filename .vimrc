@@ -12,20 +12,16 @@ Bundle 'gmarik/vundle'
 Bundle 'tomtom/tcomment_vim'
 Bundle 'scrooloose/nerdtree'
 Bundle 'kien/ctrlp.vim'
-Bundle 'noahfrederick/Hemisu'
-Bundle 'altercation/vim-colors-solarized'
 Bundle 'Lokaltog/powerline'
-Bundle 'majutsushi/tagbar'
 Bundle 'mileszs/ack.vim'
 Bundle 'Shougo/neocomplcache.vim'
-Bundle 'myusuf3/numbers.vim'
 Bundle 'godlygeek/tabular'
 Bundle 'tpope/vim-fugitive'
+Bundle 'airblade/vim-gitgutter'
 
 Bundle 'nono/vim-handlebars'
 Bundle 'cakebaker/scss-syntax.vim'
 Bundle 'kchmck/vim-coffee-script'
-Bundle 'elixir-lang/vim-elixir'
 Bundle 'slim-template/vim-slim'
 Bundle 'wavded/vim-stylus'
 
@@ -34,9 +30,7 @@ filetype plugin indent on "detect filetype automatically
 
 "----------------------------------------------------------------------- Colors
 set t_Co=256 " Explicitly tell vim that the terminal supports 256 colors
-" color Hemisu
 color solarized
-" set guifont=Anonymous\ Pro:h14
 set background=dark
 
 
@@ -156,7 +150,7 @@ map <left> <nop>
 map <right> <nop>
 
 "kill recording; I don't care about it
-" nnoremap q <Nop>
+nnoremap q <Nop>
 
 
 "--------------------------------------------------------------------- Autocmds
@@ -182,7 +176,8 @@ let g:ctrlp_custom_ignore = {
 
 
 "--------------------------------------------------------------------- NERDTree
-nmap <leader>n :NERDTree<cr>
+" nmap <leader>n :NERDTree<cr>
+nnoremap <C-g> :NERDTreeToggle<cr>
 
 
 "---------------------------------------------------------------- NeoComplCache
