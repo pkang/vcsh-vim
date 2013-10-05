@@ -4,7 +4,6 @@ filetype off
 
 " be sure to add paths to the runtime path if needed by vim
 set rtp+=~/.vim/bundle/vundle
-set rtp+=~/.vim/bundle/powerline/powerline/bindings/vim
 
 call vundle#rc()
 
@@ -12,12 +11,19 @@ Bundle 'gmarik/vundle'
 Bundle 'tomtom/tcomment_vim'
 Bundle 'scrooloose/nerdtree'
 Bundle 'kien/ctrlp.vim'
-Bundle 'Lokaltog/powerline'
+Bundle 'bling/vim-airline'
 Bundle 'mileszs/ack.vim'
-Bundle 'Shougo/neocomplcache.vim'
+Bundle 'Shougo/neocomplete.vim'
 Bundle 'godlygeek/tabular'
-Bundle 'tpope/vim-fugitive'
 Bundle 'airblade/vim-gitgutter'
+Bundle 'tpope/vim-fugitive'
+Bundle 'tpope/vim-bundler'
+Bundle 'vim-ruby/vim-ruby'
+Bundle 'tpope/vim-endwise'
+Bundle 'christoomey/vim-tmux-navigator'
+
+" also works with rubies installed with ruby-build
+Bundle 'tpope/vim-rbenv'
 
 Bundle 'nono/vim-handlebars'
 Bundle 'cakebaker/scss-syntax.vim'
@@ -41,7 +47,7 @@ set secure "disable unsafe commands in local .vimrc files
 set nobackup
 set noswapfile
 set hidden
-set shell=$SHELL\ -l
+set shell=/bin/sh
 
 
 "-------------------------------------------------------------------- Workspace
@@ -59,7 +65,7 @@ set wrapmargin=2 "wrap buffer
 set backspace=indent,eol,start "lazy backspacing
 set showcmd "show the current command
 set laststatus=2 "always show the status line. Always!
-" set showtabline=2 "show the tab line at the top, always
+let mapleader=","
 
 " line break without going into insert mode
 " <S-CR> & <S-Enter> both don't seem to work... hmm
@@ -152,10 +158,12 @@ map <right> <nop>
 "kill recording; I don't care about it
 nnoremap q <Nop>
 
+map <leader> ,
+
 
 "--------------------------------------------------------------------- Autocmds
 " reload vimrc as soon as we're done editing it
-autocmd! bufwritepost $MYVIMRC source $MYVIMRC
+" autocmd! bufwritepost $MYVIMRC source $MYVIMRC
 
 
 "-------------------------------------------------------------------- Filetypes
@@ -181,10 +189,114 @@ nnoremap <C-g> :NERDTreeToggle<cr>
 
 
 "---------------------------------------------------------------- NeoComplCache
-let g:neocomplcache_enable_at_startup = 1
-let g:neocomplcache_enable_auto_select = 1
+let g:acp_enableAtStartup = 0
+let g:neocomplete#enable_at_startup = 1
+let g:neocomplete#enable_smart_case = 1
+let g:neocomplete#sources#syntax#min_keyword_length = 3
 
 
-"--------------------------------------------------------------------- Fugitive
-nmap <leader>gs :Gstatus<cr>
-nmap <leader>gb :Gblame<cr>
+"-------------------------------------------------------------------- Gitgutter
+let g:gitgutter_realtime = 0
+
+
+"---------------------------------------------------------------------- Airline
+let g:airline_powerline_fonts = 1
+
+
+"---------------------------------------------------------- Rename current file
+function! RenameFile()
+  let old_name = expand('%')
+  let new_name = input('New file name: ', expand('%'), 'file')
+  if new_name != '' && new_name != old_name
+    exec ':saveas ' . new_name
+    exec ':silent !rm ' . old_name
+    redraw!
+  endif
+endfunction
+map <leader>n :call RenameFile()<cr>
+
+
+"-------------------------------------------------------------------- Run tests
+function! RunTestFile(...)
+  if a:0
+    let command_suffix = a:1
+  else
+    let command_suffix = ""
+  endif
+
+  let in_test_file = match(expand("%"), "_spec.rb$") != -1
+  if in_test_file
+    call SetTestFile()
+  elseif !exists("t:grb_test_file")
+    return
+  end
+
+  call RunTests(t:grb_test_file . command_suffix)
+endfunction
+
+function! SetTestFile()
+  let t:grb_test_file=@%
+endfunction
+
+function! SetTestFileLineNumber()
+  let t:grb_spec_line_number = line(".")
+endfunction
+
+" requires minitest-line
+function! RunNearestTest()
+  let in_test_file = match(expand("%"), "_spec.rb$") != -1
+  if in_test_file
+    call SetTestFileLineNumber()
+  elseif !exists("t:grb_spec_line_number")
+    return
+  end
+
+  call RunTestFile(" -l " . t:grb_spec_line_number)
+endfunction
+
+function! RunTests(filename)
+  if expand("%") != ""
+    :w
+  end
+  exec ":!clear && tmux clear-history && ruby -Ispec " . a:filename
+endfunction
+
+nmap <leader>r :call RunTestFile()<cr>
+nmap <leader>R :call RunNearestTest()<cr>
+" map <leader>a :silent call RunTests('')<cr>
+
+
+"--------------------------------- switch between test file and production file
+function! OpenTestAlternate()
+  let new_file = AlternateForCurrentFile()
+  exec ':e ' . new_file
+endfunction
+
+function! AlternateForCurrentFile()
+  let current_file = expand("%")
+  let new_file = current_file
+  let in_spec = match(current_file, '^spec/') != -1
+  let going_to_spec = !in_spec
+  let in_app = match(current_file, '\<controllers\>') != -1
+             \ || match(current_file, '\<models\>') != -1
+             \ || match(current_file, '\<views\>') != -1
+             \ || match(current_file, '\<helpers\>') != -1
+             \ || match(current_file, '\<daily_good\>') != -1
+             \ || match(current_file, '\<decorators\>') != -1
+  if going_to_spec
+    if in_app
+      let new_file = substitute(new_file, '^app/', '', '')
+    end
+    let new_file = substitute(new_file, '\.e\?rb$', '_spec.rb', '')
+    let new_file = 'spec/' . new_file
+  else
+    let new_file = substitute(new_file, '_spec\.rb$', '.rb', '')
+    let new_file = substitute(new_file, '^spec/', '', '')
+    if in_app
+      let new_file = 'app/' . new_file
+    end
+  endif
+  return new_file
+endfunction
+
+nnoremap <leader>. :call OpenTestAlternate()<cr>
