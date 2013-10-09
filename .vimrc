@@ -254,11 +254,13 @@ function! RunNearestTest()
   call RunTestFile(" -l " . t:grb_spec_line_number)
 endfunction
 
+" TODO make smarter about deciding whether or not to run minitest or rspec
 function! RunTests(filename)
   if expand("%") != ""
     :w
   end
-  exec ":!clear && tmux clear-history && ruby -Ispec " . a:filename
+  " exec ":!clear && tmux clear-history && ruby -Ispec " . a:filename
+  exec ":!clear && tmux clear-history && rspec -Ispec " . a:filename
 endfunction
 
 nmap <leader>r :call RunTestFile()<cr>
