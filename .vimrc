@@ -78,7 +78,6 @@ syntax on "turn on syntax highlighting
 
 
 "----------------------------------------------------------------------- Search
-set incsearch "incremental searching
 set ignorecase "case-insenitive searching
 set smartcase "do a case-sensitive search if uppercase letters are present
 set hlsearch "highlight search results
@@ -107,10 +106,13 @@ set formatoptions=qrn1 "I've forgotten what this does, but it helps...somehow
 
 "---------------------------------------------------------------------- Windows
 " easily move between windows with Ctrl+hjkl
-map <C-j> <C-W>j
-map <C-k> <C-W>k
-map <C-h> <C-W>h
-map <C-l> <C-W>l
+let g:tmux_navigator_no_mappings = 1
+
+" WARNING: specific to OS X 10.8 or greater!!
+nnoremap <silent> j :TmuxNavigateDown<cr>
+nnoremap <silent> k :TmuxNavigateUp<cr>
+nnoremap <silent> h :TmuxNavigateLeft<cr>
+nnoremap <silent> l :TmuxNavigateRight<cr>
 
 " easily resize windows with + and -
 if bufwinnr(1)
