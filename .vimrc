@@ -7,6 +7,8 @@ set rtp+=~/.vim/bundle/vundle
 
 call vundle#rc()
 
+" To setup Vundle:
+" git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
 Bundle 'gmarik/vundle'
 Bundle 'tomtom/tcomment_vim'
 Bundle 'scrooloose/nerdtree'
@@ -16,14 +18,14 @@ Bundle 'mileszs/ack.vim'
 Bundle 'Shougo/neocomplete.vim'
 Bundle 'godlygeek/tabular'
 Bundle 'airblade/vim-gitgutter'
-Bundle 'tpope/vim-fugitive'
-Bundle 'tpope/vim-bundler'
 Bundle 'vim-ruby/vim-ruby'
-Bundle 'tpope/vim-endwise'
 Bundle 'christoomey/vim-tmux-navigator'
 
-" also works with rubies installed with ruby-build
-Bundle 'tpope/vim-rbenv'
+" works with ruby-build rubies
+Bundle 'tpope/vim-rbenv' 
+Bundle 'tpope/vim-fugitive'
+Bundle 'tpope/vim-bundler'
+Bundle 'tpope/vim-endwise'
 
 Bundle 'nono/vim-handlebars'
 Bundle 'cakebaker/scss-syntax.vim'
