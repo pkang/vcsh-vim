@@ -1,0 +1,7 @@
+*
+!.gitignore.d
+!.gitignore.d/vimfiles
+!.vimrc
+!.vim
+!.vim/colors
+!.vim/colors/solarized.vim
