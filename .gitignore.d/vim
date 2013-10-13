@@ -1,7 +1,6 @@
 *
-.*
 !.gitignore.d
-!.gitignore.d/vimfiles
+!.gitignore.d/vim
 !.vimrc
 !.vim
 !.vim/colors
